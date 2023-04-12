@@ -92,10 +92,19 @@ async function main() {
 
     // 处理多个collection
     for (var coll in data) {
-        const collData = await loadColl(coll, data[coll]);
-        const lines = await dumpColl(collData);
+        let lines = [];
+        try {
+            const collData = await loadColl(coll, data[coll]);
+            lines = await dumpColl(collData);
+        } catch {
+            console.error(`"${coll}" 导出失败。`)
+        }
         // console.log(collData);
-        await fs.promises.writeFile(`${outPath}/${coll}.json`, lines);
+        try {
+            await fs.promises.writeFile(`${outPath}/${coll}.json`, lines);
+        } catch {
+            console.error(`"${coll}" 写入失败。`)
+        }
     }
 
     await waitLine(`\n======== Press "Enter" to exit. ========`);
