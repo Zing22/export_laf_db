@@ -1,4 +1,5 @@
 import cloud from '@/cloud-sdk'
+import { EJSON } from 'bson';
 
 function packRes(err, data) {
   return { err: err, data: data};
@@ -28,7 +29,11 @@ async function getData(collName, skipCount, limitCount) {
   // 数据库操作
   const db = cloud.database()
   const r = await db.collection(collName).skip(skipCount).limit(limitCount).get();
-  return r.data;
+  let res = [];
+  for (const item of r.data) {
+    res.push(EJSON.stringify(item));
+  }
+  return res;
 }
 
 exports.main = async function (ctx: FunctionContext) {

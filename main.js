@@ -64,14 +64,6 @@ async function inputConf() {
     await fs.promises.writeFile(ConfPath, JSON.stringify(conf, null, 4));
 }
 
-// 把list改成一行一个json
-async function dumpColl(data) {
-    let res = [];
-    for (const item of data) {
-        res.push(JSON.stringify(item));
-    }
-    return res.join("\n");
-}
 
 async function main() {
     if (!fs.existsSync(outPath)) {
@@ -95,11 +87,10 @@ async function main() {
         let lines = [];
         try {
             const collData = await loadColl(coll, data[coll]);
-            lines = await dumpColl(collData);
+            lines = collData.join("\n")
         } catch {
             console.error(`"${coll}" 导出失败。`)
         }
-        // console.log(collData);
         try {
             await fs.promises.writeFile(`${outPath}/${coll}.json`, lines);
         } catch {
